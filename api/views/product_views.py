@@ -19,11 +19,12 @@ def getProduct(request, pk):
 	serializer = ProductSerializer(product, many=False) #false - single item
 	return Response(serializer.data)
 
-@api_view(['GET'])
+@api_view(['DELETE'])
+# @permission_classes([IsAdminUser])
 def deleteProduct(request, pk):
-	product = Product.objects.get(_id=pk) #primary key by id
-	serializer = ProductSerializer(product, many=False) #false - single item
-	return Response(serializer.data)
+	product = Product.objects.get(_id=pk)
+	product.delete()
+	return Response('Item Deleted')
 
 
 @api_view(['POST'])
@@ -40,6 +41,24 @@ def createProduct(request):
         category='Sample Category',
         description=''
     )
+
+    serializer = ProductSerializer(product, many=False)
+    return Response(serializer.data)
+
+@api_view(['PUT'])
+# @permission_classes([IsAdminUser])
+def updateProduct(request, pk):
+    data = request.data
+    product = Product.objects.get(_id=pk)
+
+    product.name = data['name']
+    product.price = data['price']
+    product.brand = data['brand']
+    product.countInStock = data['countInStock']
+    product.category = data['category']
+    product.description = data['description']
+
+    product.save()
 
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
