@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.deletion import CASCADE
 
 class Item(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -14,18 +15,6 @@ class Item(models.Model):
 
     def __str__(self):
         return self.name
-
-# class Review(models.Model):
-#     product = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True)
-#     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-#     name = models.CharField(max_length=200, null=True, blank=True)
-#     rating = models.IntegerField(null=True, blank=True, default=0)
-#     comment = models.TextField(null=True, blank=True)
-#     createdAt = models.DateTimeField(auto_now_add=True)
-#     _id = models.AutoField(primary_key=True, editable=False)
-
-#     def __str__(self):
-#         return str(self.rating)
 
 # class Wishlist(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -112,3 +101,14 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return str(self.address)
+    
+class Chat(models.Model):
+    admin = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    participants = models.ManyToManyField(User, related_name='chats')
+    created = models.DateTimeField(auto_now_add=True)
+
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
+    created = models.DateTimeField(auto_now_add=True)
+    text = models.TextField(max_length=500) # what length you want
